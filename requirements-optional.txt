@@ -1,0 +1,7 @@
+# Optional dependencies. The framework runs without them, falling back to the
+# stdlib sqlite3 backend for storage and scipy for optimisation.
+
+duckdb>=0.10        # columnar Parquet store (preferred backend)
+cvxpy>=1.4          # convex optimiser (scipy SLSQP used otherwise)
+streamlit>=1.30     # web interface (app.py)
+lxml>=4.9           # HTML parsing for index constituent pages

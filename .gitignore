@@ -1,0 +1,40 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*.so
+
+# Environments
+.venv/
+venv/
+env/
+.env
+
+# Data stores and cached downloads
+store/
+store_*/
+*.sqlite
+*.parquet
+raw/
+
+# Generated output
+*.png
+*.csv
+!requirements*.txt
+
+# Local notes, not part of the published project
+TRADEOFFS.md
+CHALLENGES.md
+CV_FRAMING.md
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

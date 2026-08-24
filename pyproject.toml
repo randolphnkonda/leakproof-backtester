@@ -1,0 +1,16 @@
+[project]
+name = "leakproof-backtester"
+version = "1.0.0"
+description = "Event-driven multi-factor equity backtesting with multiple-testing correction"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [".venv", "venv", "__pycache__"]
+
+[tool.ruff.lint]
+# Pycodestyle errors and pyflakes: real defects rather than style preferences.
+select = ["E4", "E7", "E9", "F", "W"]
