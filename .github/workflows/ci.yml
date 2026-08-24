@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify (core, Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install core dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Exercises the sqlite storage backend and the scipy optimiser, which are the
+      # fallbacks used when duckdb and cvxpy are unavailable.
+      - name: Report active backends
+        run: python check_install.py
+
+      - name: No look-ahead in any allocator
+        run: python verify_no_lookahead.py
+
+      - name: Factor library and composite strategy
+        run: python verify_factors.py
+
+      - name: Delisted holdings are liquidated
+        run: python verify_delisting.py
+
+      - name: Deflated Sharpe against Monte Carlo and a null control
+        run: python verify_deflation.py
+
+      - name: Data pipeline and storage
+        run: python verify_store.py
+
+      - name: Web interface smoke test
+        run: python verify_app.py
+
+  verify-optional:
+    name: Verify (duckdb + cvxpy)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      # Runs the same suite against the preferred backends: the Parquet store read
+      # through DuckDB and the cvxpy optimiser, rather than their fallbacks.
+      - name: Install core and optional dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-optional.txt
+
+      - name: Report active backends
+        run: python check_install.py
+
+      - name: Verification suite
+        run: |
+          python verify_no_lookahead.py
+          python verify_factors.py
+          python verify_delisting.py
+          python verify_deflation.py
+          python verify_store.py
+          python verify_app.py
+
+      - name: Build a Parquet store and run an analysis against it
+        run: |
+          python build_store.py --source fixture --backend duckdb --store store_ci
+          ls store_ci/bars/*.parquet
+          python audit_store.py --store store_ci --start 2015-01-01 --end 2023-12-31
+          python audit_store.py --store store_ci --coverage --start 2015-01-01 --end 2023-12-31
+          python report_selections.py --store store_ci --start 2015-01-01 --end 2023-12-31 \
+            --factors momentum,lowvol --n-long 4
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Check
+        run: ruff check .
