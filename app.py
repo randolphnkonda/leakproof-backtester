@@ -14,6 +14,7 @@ from datetime import date
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import streamlit as st
 
 from webapp import services as S
@@ -63,6 +64,25 @@ def c_universe(p, d):
 @st.cache_data(show_spinner=False)
 def c_prices(p, syms, s, e):
     return S.store_prices(p, list(syms), s, e)
+
+
+# Metric columns and the format applied when displaying them. Values are formatted
+# into strings rather than styled, since DataFrame.style requires jinja2.
+_DISPLAY_FORMATS = {
+    "sharpe": "{:.2f}",
+    "ann_return": "{:.1%}",
+    "ann_vol": "{:.1%}",
+    "max_drawdown": "{:.1%}",
+}
+
+
+def formatted(df):
+    """Return a copy of the frame with metric columns formatted for display."""
+    out = df.copy()
+    for col, fmt in _DISPLAY_FORMATS.items():
+        if col in out.columns:
+            out[col] = [fmt.format(v) if pd.notna(v) else "" for v in out[col]]
+    return out
 
 
 def sig_badge(p: float) -> str:
@@ -162,10 +182,7 @@ with tab_factors:
     if specs_cmp:
         fdf = c_factors(data_choice, store_path, start, end, lookback, skip, n_long,
                         allocator, cov_method, cov_lookback, int(seed), tuple(specs_cmp))
-        st.dataframe(
-            fdf.style.format({"sharpe": "{:.2f}", "ann_return": "{:.1%}",
-                              "ann_vol": "{:.1%}", "max_drawdown": "{:.1%}"}),
-            width="stretch")
+        st.dataframe(formatted(fdf), width="stretch")
         st.bar_chart(fdf.set_index("factors")["sharpe"])
     st.caption("Reversal approximates the negative of short-window momentum, so "
                "combining the two largely cancels the signal.")
@@ -232,10 +249,7 @@ with tab_port:
     st.subheader("Allocator comparison")
     comp = c_alloc(data_choice, store_path, start, end, lookback, skip, n_long,
                    cov_method, cov_lookback, int(seed), factors)
-    st.dataframe(
-        comp.style.format({"sharpe": "{:.2f}", "ann_return": "{:.1%}",
-                           "ann_vol": "{:.1%}", "max_drawdown": "{:.1%}"}),
-        width="stretch")
+    st.dataframe(formatted(comp), width="stretch")
 
     st.divider()
     st.subheader("Covariance noise and weight stability")
