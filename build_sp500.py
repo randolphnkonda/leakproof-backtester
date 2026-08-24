@@ -89,7 +89,6 @@ def main() -> None:
     raw_dir.mkdir(parents=True, exist_ok=True)
 
     if a.probe_stooq:
-        from backtester.pipeline.sources import diagnose_stooq
         print(f"Probing Stooq for {a.probe_stooq}...")
         for url, result in diagnose_stooq(a.probe_stooq):
             print(f"  {result:<55} {url[:70]}")

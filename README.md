@@ -1,6 +1,6 @@
 # Leak-Proof Multi-Factor Backtester
 
-[![CI](https://github.com/randolphnkonda/leakproof-backtester/actions/workflows/ci.yml/badge.svg)](https://github.com/randolphnkonda/leakproof-backtester/actions/workflows/ci.yml)
+[![CI](https://github.com/<user>/leakproof-backtester/actions/workflows/ci.yml/badge.svg)](https://github.com/<user>/leakproof-backtester/actions/workflows/ci.yml)
 
 An event-driven equity backtesting framework built around statistical honesty:
 point-in-time index membership, execution that cannot reference future prices, and
@@ -33,7 +33,7 @@ check in the verification suite.
 ## Installation
 
 ```bash
-git clone https://github.com/randolphnkonda/leakproof-backtester.git
+git clone https://github.com/<user>/leakproof-backtester.git
 cd leakproof-backtester
 pip install -r requirements.txt
 python3 check_install.py
@@ -230,7 +230,12 @@ python3 verify_app.py            # interface smoke test
 ```
 
 All six run in CI on Python 3.10 through 3.12, against both the default backends and
-the optional DuckDB and cvxpy paths.
+the optional DuckDB and cvxpy paths. Linting uses ruff:
+
+```bash
+pip install ruff
+ruff check .
+```
 
 These assert invariants rather than compare against recorded output, so they remain
 valid across refactors. `verify_deflation.py` includes a null control: on zero-drift

@@ -9,11 +9,12 @@ from __future__ import annotations
 from datetime import date
 
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import numpy as np
 
 from backtester import BacktestConfig, analyze_sweep, build_grid, run_sweep
+
+# Non-interactive backend for headless rendering.
+matplotlib.use("Agg")
 
 
 def _run_regime(regime: str):

@@ -8,10 +8,12 @@ from __future__ import annotations
 from datetime import date
 
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from backtester import BacktestConfig, run_backtest
+
+# Non-interactive backend for headless rendering.
+matplotlib.use("Agg")
 
 
 def main() -> None:

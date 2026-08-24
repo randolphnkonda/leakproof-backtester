@@ -12,12 +12,14 @@ from __future__ import annotations
 from datetime import date
 
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
 
 from webapp import services as S
+
+# Non-interactive backend for headless rendering.
+matplotlib.use("Agg")
 
 st.set_page_config(page_title="Leak-Proof Backtester", layout="wide")
 
@@ -216,7 +218,9 @@ with tab_sweep:
         ax.hist(s, bins=18, edgecolor="white")
         ax.axvline(np.nanmax(sw["sharpes"]), color="crimson", linestyle="--",
                    label=f"best {np.nanmax(sw['sharpes']):.2f}")
-        ax.set_xlabel("Annualised Sharpe"); ax.set_ylabel("Configs"); ax.legend()
+        ax.set_xlabel("Annualised Sharpe")
+        ax.set_ylabel("Configs")
+        ax.legend()
         st.pyplot(fig)
 
         with st.expander("All trials"):
@@ -259,8 +263,10 @@ with tab_port:
                label="sample", color="#D85A30")
         ax.bar(x + 0.2, ws["lw_mean"], 0.4, yerr=ws["lw_std"], capsize=3,
                label="Ledoit-Wolf", color="#1D9E75")
-        ax.set_xticks(x); ax.set_xticklabels(ws["symbols"], rotation=45, ha="right")
-        ax.set_ylabel("min-variance weight"); ax.legend()
+        ax.set_xticks(x)
+        ax.set_xticklabels(ws["symbols"], rotation=45, ha="right")
+        ax.set_ylabel("min-variance weight")
+        ax.legend()
         st.pyplot(fig)
 
 

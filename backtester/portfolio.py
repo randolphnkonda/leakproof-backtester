@@ -5,7 +5,7 @@ an immutable PortfolioState snapshot. Contains no allocation or sizing logic.
 """
 from __future__ import annotations
 
-from .events import FillEvent, MarketEvent, PortfolioState, Side
+from .events import FillEvent, MarketEvent, PortfolioState
 
 
 class SimplePortfolio:

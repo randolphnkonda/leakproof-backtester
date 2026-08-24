@@ -81,7 +81,8 @@ class _Shim:
 
 
 def run() -> None:
-    import tempfile, shutil
+    import shutil
+    import tempfile
     from datetime import date
     from build_store import build
     tmp = tempfile.mkdtemp()

@@ -333,7 +333,6 @@ def membership_from_snapshots(snapshots: pd.DataFrame, floor: date,
     open_since: dict[str, date] = {}
     rows: list[dict] = []
     prev: set[str] = set()
-    last_d: date | None = None
 
     for r in snaps.itertuples(index=False):
         d = r[0].date()
@@ -346,7 +345,7 @@ def membership_from_snapshots(snapshots: pd.DataFrame, floor: date,
             start = open_since.pop(sym, None)
             if start is not None:
                 rows.append({"symbol": sym, "start_date": start, "end_date": d})
-        prev, last_d = members, d
+        prev = members
 
     for sym, start in open_since.items():
         rows.append({"symbol": sym, "start_date": start, "end_date": None})

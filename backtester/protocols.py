@@ -35,8 +35,8 @@ class Strategy(Protocol):
 
 class HistoryView(Protocol):
     def returns(
-        self, symbols: "Sequence[str]", lookback: int
-    ) -> "tuple[list[str], object]":
+        self, symbols: Sequence[str], lookback: int
+    ) -> tuple[list[str], object]:
         """Return (symbols, T x k return matrix) ending at the current close."""
         ...
 

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import shutil
 import tempfile
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
 
 import numpy as np

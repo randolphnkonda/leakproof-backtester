@@ -59,7 +59,7 @@ def main() -> None:
     print(f"opening store '{a.store}'...", flush=True)
     excl = {} if a.no_quality_filter else _cached_exclusions(cfg)
     data = StoreDataHandler(store, a.start, a.end, exclude=excl)
-    print(f"loading price panel and running the backtest...", flush=True)
+    print("loading price panel and running the backtest...", flush=True)
     print(f"universe after filtering: {len(data.symbols)} symbols "
           f"({len(excl)} excluded)")
     if excl:

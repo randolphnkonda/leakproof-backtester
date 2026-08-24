@@ -12,7 +12,6 @@ from __future__ import annotations
 from datetime import date
 
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -21,6 +20,9 @@ from backtester.data import SyntheticDataHandler, _SYNTHETIC_SYMBOLS
 from backtester.history import RollingHistory
 from backtester.optimize import active_backend, solve_min_variance
 from backtester.risk_model import estimate_covariance, ledoit_wolf_cov
+
+# Non-interactive backend for headless rendering.
+matplotlib.use("Agg")
 
 _ANN = np.sqrt(252)
 

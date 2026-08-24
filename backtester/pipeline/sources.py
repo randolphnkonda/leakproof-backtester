@@ -17,8 +17,14 @@ capability.
 """
 from __future__ import annotations
 
+import http.cookiejar
+import json
+import os
+import time
+import urllib.error
+import urllib.parse
 import urllib.request
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -66,8 +72,6 @@ def provider_symbol(ticker: str, provider: str) -> str:
 
 def _make_opener():
     """Return a urllib opener that retains cookies across requests."""
-    import http.cookiejar
-    import urllib.request
     jar = http.cookiejar.CookieJar()
     return urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
 
@@ -76,7 +80,6 @@ _OPENER = None
 
 
 def _get(url: str, referer: str | None = None, timeout: int = 20) -> str:
-    import urllib.request
     global _OPENER
     if _OPENER is None:
         _OPENER = _make_opener()
@@ -228,18 +231,11 @@ def generate_fixture(raw_dir: Path, start: date, end: date, seed: int = 0) -> li
 
 # Authenticated providers. Both serve delisted symbols, which survivorship-free
 # backtests require. Credentials are read from the environment.
-import json
-import os
-
-
 def _http_json(req, timeout: int, retries: int = 3):
     """Issue a JSON request, retrying on rate limits and server errors.
 
     Honours the Retry-After header where present, otherwise backs off exponentially.
     """
-    import time as _time
-    import urllib.error
-    import urllib.request
     last = None
     for attempt in range(retries):
         try:
@@ -250,7 +246,7 @@ def _http_json(req, timeout: int, retries: int = 3):
                 wait = e.headers.get("Retry-After") if e.headers else None
                 delay = float(wait) if (wait and str(wait).isdigit()) else 2.0 * (2 ** attempt)
                 if attempt < retries - 1:
-                    _time.sleep(min(delay, 60.0))
+                    time.sleep(min(delay, 60.0))
                     continue
             raise
     raise last
@@ -269,7 +265,6 @@ def fetch_tiingo(ticker: str, start=None, end=None, timeout: int = 20) -> str:
     key = os.environ.get("TIINGO_API_KEY", "").strip()
     if not key:
         raise RuntimeError("TIINGO_API_KEY is not set in the environment")
-    import urllib.request
     sd = (start.isoformat() if start else "1990-01-01")
     ed = (end.isoformat() if end else "2099-12-31")
     url = (f"https://api.tiingo.com/tiingo/daily/"
@@ -311,8 +306,6 @@ def fetch_alpaca(ticker: str, start=None, end=None, timeout: int = 20,
     sec = os.environ.get("ALPACA_API_SECRET_KEY", "").strip()
     if not (kid and sec):
         raise RuntimeError("ALPACA_API_KEY_ID / ALPACA_API_SECRET_KEY are not set")
-    import urllib.parse
-    import urllib.request
     sd = (start.isoformat() if start else "1990-01-01")
     ed = (end.isoformat() if end else "2099-12-31")
     rows, page_token = [], None
@@ -382,8 +375,6 @@ def fetch_alpaca_batch(tickers, start=None, end=None, timeout: int = 30,
     sec = os.environ.get("ALPACA_API_SECRET_KEY", "").strip()
     if not (kid and sec):
         raise RuntimeError("ALPACA_API_KEY_ID / ALPACA_API_SECRET_KEY are not set")
-    import urllib.parse
-    import urllib.request
 
     # Requests use provider notation; responses are mapped back to canonical tickers.
     canon = [t.strip().upper() for t in tickers]

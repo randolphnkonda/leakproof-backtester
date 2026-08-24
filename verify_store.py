@@ -21,7 +21,7 @@ import pandas as pd
 
 from backtester import BacktestConfig, run_backtest
 from backtester.history import RollingHistory
-from backtester.pipeline.sources import FIXTURE_JOINER, FIXTURE_LEAVER, FIXTURE_SWAP_DATE
+from backtester.pipeline.sources import FIXTURE_JOINER, FIXTURE_LEAVER
 from backtester.pipeline.store import open_store
 from backtester.pipeline.universe import (
     membership_from_snapshots, parse_sp500_tables, reconstruct_membership,
@@ -113,7 +113,6 @@ def check_membership_gates_trading() -> None:
     keeps trading in the real world (GME, FSLR, URBN all did), and the store may hold
     those bars, but the point-in-time universe must not offer them.
     """
-    import tempfile
     from backtester.pipeline.store import SqliteStore
     from backtester.store_data import StoreDataHandler
 
