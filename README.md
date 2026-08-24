@@ -1,6 +1,6 @@
 # Leak-Proof Multi-Factor Backtester
 
-[![CI](https://github.com/randolphnkonda/leakproof-backtester/actions/workflows/ci.yml/badge.svg)](https://github.com/<user>/leakproof-backtester/actions/workflows/ci.yml)
+[![CI](https://github.com/randolphnkonda/leakproof-backtester/actions/workflows/ci.yml/badge.svg)](https://github.com/randolphnkonda/leakproof-backtester/actions/workflows/ci.yml)
 
 An event-driven equity backtesting framework built around statistical honesty:
 point-in-time index membership, execution that cannot reference future prices, and
