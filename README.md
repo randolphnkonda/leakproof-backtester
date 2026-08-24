@@ -50,6 +50,9 @@ pip install -r requirements-optional.txt
 Without them the framework uses the stdlib `sqlite3` storage backend and the scipy
 optimiser. Both paths are covered by CI.
 
+`lxml` is required only to parse index constituent pages from Wikipedia. The default
+membership source uses dated snapshots and needs no HTML parser.
+
 ---
 
 ## Quick start

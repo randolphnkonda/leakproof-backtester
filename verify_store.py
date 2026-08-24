@@ -24,7 +24,10 @@ from backtester.history import RollingHistory
 from backtester.pipeline.sources import FIXTURE_JOINER, FIXTURE_LEAVER
 from backtester.pipeline.store import open_store
 from backtester.pipeline.universe import (
-    membership_from_snapshots, parse_sp500_tables, reconstruct_membership,
+    html_parser_available,
+    membership_from_snapshots,
+    parse_sp500_tables,
+    reconstruct_membership,
 )
 from build_store import build
 
@@ -52,7 +55,16 @@ def check_reconstruction() -> None:
 
 
 def check_wikipedia_parser() -> None:
-    """Parse constituents HTML with multi-row headers, footnotes, and dashes."""
+    """Parse constituents HTML with multi-row headers, footnotes, and dashes.
+
+    Skipped when no HTML parser is installed: pandas requires lxml, or both
+    beautifulsoup4 and html5lib, none of which are core dependencies.
+    """
+    if not html_parser_available():
+        print("wikipedia parser: skipped, no HTML parser installed "
+              "(pip install lxml)")
+        return
+
     html = """
     <table><tr><th>Symbol</th><th>Security</th><th>GICS Sector</th><th>Date added</th></tr>
     <tr><td>AAPL</td><td>Apple</td><td>IT</td><td>1982-11-30</td></tr>

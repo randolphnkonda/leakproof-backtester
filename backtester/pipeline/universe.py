@@ -136,11 +136,45 @@ def _clean_ticker(x) -> str:
     return t.replace(".", "-").upper()
 
 
+def _read_html_tables(html: str):
+    """Parse HTML tables, falling back to BeautifulSoup when lxml is absent.
+
+    pandas requires a third-party HTML parser, which is not a core dependency of
+    this package because the snapshot membership source does not need one.
+    """
+    from io import StringIO
+    try:
+        return pd.read_html(StringIO(html))
+    except ImportError:
+        pass
+    try:
+        return pd.read_html(StringIO(html), flavor="bs4")
+    except ImportError as e:
+        raise RuntimeError(
+            "Parsing index constituent pages requires an HTML parser. Install one "
+            "with `pip install lxml`, or use the default snapshot membership source, "
+            "which does not need it."
+        ) from e
+
+
+def html_parser_available() -> bool:
+    """Return True if pandas can parse HTML in this environment.
+
+    Probes with a minimal table rather than checking imports: pandas needs lxml, or
+    both beautifulsoup4 and html5lib, so the presence of any single package is not
+    sufficient.
+    """
+    try:
+        _read_html_tables("<table><tr><th>a</th></tr><tr><td>1</td></tr></table>")
+        return True
+    except Exception:
+        return False
+
+
 def describe_tables(html: str) -> str:
     """Return a summary of every table on the page, for diagnosing parse failures."""
-    from io import StringIO
     lines = []
-    for i, raw in enumerate(pd.read_html(StringIO(html))):
+    for i, raw in enumerate(_read_html_tables(html)):
         t = _flatten_columns(raw)
         lines.append(f"[{i}] rows={len(t)} cols={list(t.columns)}")
     return "\n".join(lines)
@@ -198,8 +232,7 @@ def parse_sp500_tables(html: str) -> tuple[set[str], pd.DataFrame]:
     Raises:
         RuntimeError: If the constituents table cannot be located.
     """
-    from io import StringIO
-    tables = pd.read_html(StringIO(html))
+    tables = _read_html_tables(html)
 
     current: set[str] = set()
     changes = pd.DataFrame(columns=["date", "added", "removed"])
